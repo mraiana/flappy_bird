@@ -1,44 +1,54 @@
 import pygame, random, time
 from pygame.locals import *
 
+pygame.init()
+
 #переменные
-win_widht = 400
-win_height = 600
-speed = 20
-gravity = 2.5
-game_speed = 15
-ground_widht = 2 * win_widht
-ground_height = 100
-pipe_widht = 80
-pipe_height = 500
-pipe_gap = 150
+SCREEN_WIDHT = 400
+SCREEN_HEIGHT = 600
+SPEED = 20
+GRAVITY = 2.5
+GAME_SPEED = 15
+
+GROUND_WIDHT = 2 * SCREEN_WIDHT
+GROUND_HEIGHT= 100
+
+PIPE_WIDHT = 80
+PIPE_HEIGHT = 500
+
+PIPE_GAP = 150
 
 # класс для спрайта
 class Bird(pygame.sprite.Sprite):
+
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self) #наследование 
+        pygame.sprite.Sprite.__init__(self) #наследование
+
         self.images =  [pygame.image.load('assets/sprites/bluebird-upflap.png').convert_alpha(),
                         pygame.image.load('assets/sprites/bluebird-midflap.png').convert_alpha(),
-                        pygame.image.load('assets/sprites/bluebird-downflap.png').convert_alpha()] # разные состояние размахов
+                        pygame.image.load('assets/sprites/bluebird-downflap.png').convert_alpha()]  # разные состояние размахов
 
-        self.speed = speed
+        self.speed = SPEED
+
         self.current_image = 0
         self.image = pygame.image.load('assets/sprites/bluebird-upflap.png').convert_alpha()
         self.mask = pygame.mask.from_surface(self.image)
+
         self.rect = self.image.get_rect()
-        self.rect[0] = win_widht / 6
-        self.rect[1] = win_height / 2
+        self.rect[0] = SCREEN_WIDHT / 6
+        self.rect[1] = SCREEN_HEIGHT / 2
 
     def update(self): # обновлять картинку спрайта в каждом кадре
         self.current_image = (self.current_image + 1) % 3
         self.image = self.images[self.current_image]
-        self.speed += gravity
+        self.speed += GRAVITY
+
         self.rect[1] += self.speed
 
     def bump(self): # прыжок
-        self.speed = -speed
+        self.speed = -SPEED
 
-    def begin(self): # обновление изображения
+    def begin(self):    # обновление изображения
         self.current_image = (self.current_image + 1) % 3
         self.image = self.images[self.current_image]
 
@@ -51,85 +61,82 @@ class Pipe(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         # картинки
         self. image = pygame.image.load('assets/sprites/pipe-green.png').convert_alpha()
-        self.image = pygame.transform.scale(self.image, (pipe_widht, pipe_height))
-
-        self.rect = self.image.get_rect()
-        self.rect[0] = xpos
+        self.image = pygame.transform.scale(self.image, (PIPE_WIDHT, PIPE_HEIGHT))
 
         # расположение
+        self.rect = self.image.get_rect()
+        self.rect[0] = xpos
+        # прямоугольники 
         if inverted:
             self.image = pygame.transform.flip(self.image, False, True)
             self.rect[1] = - (self.rect[3] - ysize)
         else:
-            self.rect[1] = win_height - ysize
-        # прямоугольники 
+            self.rect[1] = SCREEN_HEIGHT - ysize
+
+
         self.mask = pygame.mask.from_surface(self.image)
 
 
-    def update(self): # обновление кадра
-        self.rect[0] -= game_speed
+    def update(self):       # обновление кадра
+        self.rect[0] -= GAME_SPEED
+
         
 
-class Ground(pygame.sprite.Sprite):
-    
+class Ground(pygame.sprite.Sprite): 
     def __init__(self, xpos):
         pygame.sprite.Sprite.__init__(self)
         # картинки
         self.image = pygame.image.load('assets/sprites/base.png').convert_alpha()
-        self.image = pygame.transform.scale(self.image, (ground, ground_height))
+        self.image = pygame.transform.scale(self.image, (GROUND_WIDHT, GROUND_HEIGHT))
         # прямоугольники
         self.mask = pygame.mask.from_surface(self.image)
 
         self.rect = self.image.get_rect()
         self.rect[0] = xpos
-        self.rect[1] = win_height - ground_height
-    def update(self): # обновление
-        self.rect[0] -= game_speed
+        self.rect[1] = SCREEN_HEIGHT - GROUND_HEIGHT
+    def update(self):        # обновление кадров
+        self.rect[0] -= GAME_SPEED
 
-def is_off_screen(sprite): # видимость спрайта
+def is_off_screen(sprite):      # видимость спрайта
     return sprite.rect[0] < -(sprite.rect[2])
 
-def get_random_pipes(xpos): # ран.объекты pipe
+def get_random_pipes(xpos):     # ран.объекты pipe
     size = random.randint(100, 300)
     pipe = Pipe(False, xpos, size)
-    pipe_inverted = Pipe(True, xpos, win_height - size - pipe_gap)
+    pipe_inverted = Pipe(True, xpos, SCREEN_HEIGHT - size - PIPE_GAP)
     return pipe, pipe_inverted
 
-# подключение python
+
 pygame.init()
-screen = pygame.display.set_mode((win_widht, win_height))
+screen = pygame.display.set_mode((SCREEN_WIDHT, SCREEN_HEIGHT))
 pygame.display.set_caption('Flappy Bird')
 # картинки
-background = pygame.image.load('assets/sprites/background_day.png')
-background = pygame.transform.scale(background, (win_widht, win_height))
-begin_image = pygame.image.load('assets/sprites/message.png').convert_alpha()
+BACKGROUND = pygame.image.load('assets/sprites/background-day.png')
+BACKGROUND = pygame.transform.scale(BACKGROUND, (SCREEN_WIDHT, SCREEN_HEIGHT))
+BEGIN_IMAGE = pygame.image.load('assets/sprites/message.png').convert_alpha()
 
-# группа для птиц
+# группа для спрайтов
 bird_group = pygame.sprite.Group()
 bird = Bird()
 bird_group.add(bird)
-
+# группа для ground
 ground_group = pygame.sprite.Group()
 
-# группа для ground
 for i in range (2):
-    ground = Ground(ground_widht * i)
+    ground = Ground(GROUND_WIDHT * i)
     ground_group.add(ground)
-
 # группа для pipe
 pipe_group = pygame.sprite.Group()
 for i in range (2):
-    pipes = get_random_pipes(win_widht * i + 800)
+    pipes = get_random_pipes(SCREEN_WIDHT * i + 800)
     pipe_group.add(pipes[0])
     pipe_group.add(pipes[1])
 
-
-
 clock = pygame.time.Clock()
 
-game = True
+begin = True
 
-while game:
+while begin:
 
     clock.tick(15)
     #выход игры
@@ -141,13 +148,13 @@ while game:
                 bird.bump()
                 begin = False
 
-    screen.blit(background, (0, 0))
-    screen.blit(begin_image, (120, 150))
+    screen.blit(BACKGROUND, (0, 0))
+    screen.blit(BEGIN_IMAGE, (120, 150))
 
-    if is_off_screen(ground_group.sprites()[0]): # удаляет спрайт, если за пределами экрана
+    if is_off_screen(ground_group.sprites()[0]):             # удаляет спрайт, если за пределами экрана
         ground_group.remove(ground_group.sprites()[0])
 
-        new_ground = Ground(ground_widht - 20)
+        new_ground = Ground(GROUND_WIDHT - 20)
         ground_group.add(new_ground)
 
     bird.begin()
@@ -170,19 +177,19 @@ while True:
             if event.key == K_SPACE or event.key == K_UP:
                 bird.bump()
 
-    screen.blit(background, (0, 0))
+    screen.blit(BACKGROUND, (0, 0))
 
     if is_off_screen(ground_group.sprites()[0]):
         ground_group.remove(ground_group.sprites()[0])
 
-        new_ground = Ground(ground_widht - 20)
+        new_ground = Ground(GROUND_WIDHT - 20)
         ground_group.add(new_ground)
 
-    if is_off_screen(pipe_group.sprites()[0]): #удаляет спрайт, если за пределами экрана
+    if is_off_screen(pipe_group.sprites()[0]):      #удаляет спрайт, если за пределами экрана
         pipe_group.remove(pipe_group.sprites()[0])
         pipe_group.remove(pipe_group.sprites()[0])
 
-        pipes = get_random_pipes(win_widht * 2)
+        pipes = get_random_pipes(SCREEN_WIDHT * 2)
 
         pipe_group.add(pipes[0])
         pipe_group.add(pipes[1])
@@ -198,7 +205,6 @@ while True:
     pygame.display.update()
 
     if (pygame.sprite.groupcollide(bird_group, ground_group, False, False, pygame.sprite.collide_mask) or
-            pygame.sprite.groupcollide(bird_group, pipe_group, False, False, pygame.sprite.collide_mask)): # бнаружение столкновений между спрайтами
+            pygame.sprite.groupcollide(bird_group, pipe_group, False, False, pygame.sprite.collide_mask)):       # обнаружение столкновений между спрайтами
         time.sleep(1)
         break
-
