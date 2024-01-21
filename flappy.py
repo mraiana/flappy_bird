@@ -24,14 +24,14 @@ class Bird(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self) #наследование
 
-        self.images =  [pygame.image.load('assets/sprites/bluebird-upflap.png').convert_alpha(),
-                        pygame.image.load('assets/sprites/bluebird-midflap.png').convert_alpha(),
-                        pygame.image.load('assets/sprites/bluebird-downflap.png').convert_alpha()]  # разные состояние размахов
+        self.images =  [pygame.image.load('assets/bluebird-upflap.png').convert_alpha(),
+                        pygame.image.load('assets/bluebird-midflap.png').convert_alpha(),
+                        pygame.image.load('assets/bluebird-downflap.png').convert_alpha()]  # разные состояние размахов
 
         self.speed = SPEED
 
         self.current_image = 0
-        self.image = pygame.image.load('assets/sprites/bluebird-upflap.png').convert_alpha()
+        self.image = pygame.image.load('assets/bluebird-upflap.png').convert_alpha()
         self.mask = pygame.mask.from_surface(self.image)
 
         self.rect = self.image.get_rect()
@@ -60,7 +60,7 @@ class Pipe(pygame.sprite.Sprite):
     def __init__(self, inverted, xpos, ysize):
         pygame.sprite.Sprite.__init__(self)
         # картинки
-        self. image = pygame.image.load('assets/sprites/pipe-green.png').convert_alpha()
+        self. image = pygame.image.load('assets/pipe-green.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (PIPE_WIDHT, PIPE_HEIGHT))
 
         # расположение
@@ -86,7 +86,7 @@ class Ground(pygame.sprite.Sprite):
     def __init__(self, xpos):
         pygame.sprite.Sprite.__init__(self)
         # картинки
-        self.image = pygame.image.load('assets/sprites/base.png').convert_alpha()
+        self.image = pygame.image.load('assets/base.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (GROUND_WIDHT, GROUND_HEIGHT))
         # прямоугольники
         self.mask = pygame.mask.from_surface(self.image)
@@ -111,9 +111,9 @@ pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDHT, SCREEN_HEIGHT))
 pygame.display.set_caption('Flappy Bird')
 # картинки
-BACKGROUND = pygame.image.load('assets/sprites/background-day.png')
+BACKGROUND = pygame.image.load('assets/background-day.png')
 BACKGROUND = pygame.transform.scale(BACKGROUND, (SCREEN_WIDHT, SCREEN_HEIGHT))
-BEGIN_IMAGE = pygame.image.load('assets/sprites/message.png').convert_alpha()
+BEGIN_IMAGE = pygame.image.load('assets/message.png').convert_alpha()
 
 # группа для спрайтов
 bird_group = pygame.sprite.Group()
